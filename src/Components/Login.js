@@ -1,20 +1,34 @@
 import React, { useState } from 'react'
-import { axiosInstance } from '../api/axiosInstance';
+import { axiosInstance } from '../api/axiosInstance'
 import { useNavigate } from 'react-router-dom';
 
 
-export default function Login() {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+export default function Login({setLoader}) {
+  const [email, setEmail] = useState()
+  const [password, setPassword] = useState()
+  const [userDetails, setUserDetails] = useState()
+  const [errorMsg, setErrorMsg] = useState();
   const navigate = useNavigate()
 
+
   const HandleLoginBtn = () => {
+    setLoader('')
     axiosInstance.post('auth/login', { email: email, password: password }).then((res) => {
-      console.log(res.data.message)
+      if (res.response) {
+        setErrorMsg(res.response.data.message)
+      } else {
+        setErrorMsg('')
+      }
       localStorage.setItem('token', res.data.token)
-      navigate('/home')
-      
-    }).catch(err => console.log(err))
+      setLoader('d-none')
+      navigate('/', { state: res.data.data })
+    })
+      .catch((err) => {
+        setLoader('d-none')
+
+        console.log("errors:", err);
+      })
+
   }
   return (
     <>
@@ -32,6 +46,13 @@ export default function Login() {
       <div className='row mt-3'>
         <div className='col-12 d-flex justify-content-end'>
           <button className='btn btn-primary' onClick={HandleLoginBtn}>Login</button>
+        </div>
+      </div>
+      <div className='row mt-3'>
+        <div className='col-12'>
+          <span className='text-danger'>
+            {errorMsg}
+          </span>
         </div>
       </div>
     </>

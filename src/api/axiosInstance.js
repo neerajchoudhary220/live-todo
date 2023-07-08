@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    Accept: 'application/json',
+    'Accept': '*/*',
     'Access-Control-Allow-Origin':'*',
     
   }
@@ -26,6 +26,9 @@ axiosInstance.interceptors.response.use(
   res => {
     return res;
   },
-  err => console.log(err),
+  err => {
+    console.log(err)
+    return err;
+  },
 );
 export { axiosInstance }
